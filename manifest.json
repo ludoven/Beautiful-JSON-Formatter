@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Beautiful JSON Formatter",
+  "version": "1.0",
+  "description": "Detects and formats JSON with a beautiful, interactive UI.",
+  "icons": {
+  "16": "icon.png",
+  "48": "icon.png",
+  "128": "icon.png"
+},
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_end"
+    }
+  ]
+}

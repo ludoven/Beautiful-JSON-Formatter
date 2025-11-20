@@ -1,0 +1,193 @@
+:root {
+  --bg-color: #1e1e1e;
+  --text-color: #d4d4d4;
+  --key-color: #9cdcfe;
+  --string-color: #ce9178;
+  --number-color: #b5cea8;
+  --boolean-color: #569cd6;
+  --null-color: #569cd6;
+  --bracket-color: #ffd700;
+  --font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-size: 14px;
+  --indent-size: 20px;
+  --toolbar-height: 40px;
+  --toolbar-bg: #2d2d2d;
+  --toolbar-border: #3e3e3e;
+  --line-number-color: #858585;
+  --line-number-width: 40px;
+}
+
+body.json-formatter-active {
+  margin: 0;
+  padding-top: var(--toolbar-height);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-family);
+  font-size: var(--font-size);
+}
+
+#json-formatter-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--toolbar-height);
+  background-color: var(--toolbar-bg);
+  border-bottom: 1px solid var(--toolbar-border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toolbar-item {
+  margin-right: 20px;
+  display: flex;
+  align-items: center;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.toolbar-item label {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+#json-formatter-root {
+  padding: 20px;
+  padding-left: calc(20px + var(--line-number-width));
+  /* Space for line numbers */
+  position: relative;
+}
+
+/* Line Numbers */
+.line-number {
+  position: absolute;
+  /* 
+     Calculate left position to counteract indentation.
+     - (depth * indent-size) moves it to the left edge of the current node's container (roughly).
+     But we want it at the far left of the root container.
+     The root container has padding-left: 20px + line-number-width.
+     So we need to move left by (depth * indent-size) + extra spacing.
+     
+     Actually, let's simplify. 
+     The 'left' property is relative to the .json-node (which is relative).
+     The .json-node is indented by 'margin-left' from its parent.
+     The total indentation relative to root is depth * indent-size.
+     So if we set left: calc( -1 * (var(--depth) * var(--indent-size)) - var(--line-number-width) );
+     It should place it in the gutter.
+  */
+  left: calc(-1 * (var(--depth) * var(--indent-size)) - var(--line-number-width));
+  width: var(--line-number-width);
+  text-align: right;
+  padding-right: 10px;
+  color: var(--line-number-color);
+  user-select: none;
+  font-size: 12px;
+  line-height: inherit;
+  box-sizing: border-box;
+  /* Ensure padding doesn't affect width calculation if we were setting width */
+}
+
+.hide-line-numbers .line-number {
+  display: none;
+}
+
+.hide-line-numbers #json-formatter-root {
+  padding-left: 20px;
+}
+
+/* Raw View */
+#json-raw-view {
+  padding: 20px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  display: none;
+}
+
+.show-raw #json-formatter-root {
+  display: none;
+}
+
+.show-raw #json-raw-view {
+  display: block;
+}
+
+.json-node {
+  margin-left: var(--indent-size);
+  position: relative;
+}
+
+.json-node.root {
+  margin-left: 0;
+}
+
+.json-node.closing-node {
+  margin-left: 0;
+}
+
+.json-key {
+  color: var(--key-color);
+  cursor: pointer;
+}
+
+.json-value.string {
+  color: var(--string-color);
+}
+
+.json-value.number {
+  color: var(--number-color);
+}
+
+.json-value.boolean {
+  color: var(--boolean-color);
+}
+
+.json-value.null {
+  color: var(--null-color);
+}
+
+.json-bracket {
+  color: var(--bracket-color);
+  font-weight: bold;
+}
+
+.collapser {
+  position: absolute;
+  left: -15px;
+  top: 2px;
+  width: 12px;
+  height: 12px;
+  line-height: 10px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  font-size: 10px;
+  color: #888;
+  transition: transform 0.1s;
+}
+
+.collapser:hover {
+  color: #fff;
+}
+
+.collapsed>.json-children {
+  display: none;
+}
+
+.collapsed>.collapser {
+  transform: rotate(-90deg);
+}
+
+.collapsed::after {
+  content: "...";
+  color: #888;
+  margin-left: 5px;
+  font-size: 12px;
+}
+
+.copy-btn {
+  /* Moved to toolbar */
+  display: none;
+}
